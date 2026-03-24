@@ -13,8 +13,12 @@ export class PopulationController {
 
   @Get('realtime')
   @ApiOperation({ summary: 'Get latest population data for all hotspots' })
-  getRealtime() {
-    return this.populationService.getRealtimeAll();
+  async getRealtime() {
+    const hotspots = await this.populationService.getRealtimeAll();
+    return {
+      hotspots,
+      fetchedAt: new Date().toISOString(),
+    };
   }
 
   @Get('history')

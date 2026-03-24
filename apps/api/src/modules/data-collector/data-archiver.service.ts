@@ -31,6 +31,7 @@ export class DataArchiverService {
       if (!location.areaCode) continue;
 
       const record = await this.seoulApiService.fetchPopulationData(
+        location.name,
         location.areaCode,
       );
       if (!record) continue;
