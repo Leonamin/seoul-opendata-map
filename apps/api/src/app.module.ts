@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CacheModule } from '@nestjs/cache-manager';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config.js';
+import { validate } from './config/env.validation.js';
 import { LocationModule } from './modules/location/location.module.js';
 import { PopulationModule } from './modules/population/population.module.js';
 import { CommercialModule } from './modules/commercial/commercial.module.js';
@@ -18,6 +19,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
+      validate,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
