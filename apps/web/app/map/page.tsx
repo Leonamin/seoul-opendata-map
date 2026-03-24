@@ -12,6 +12,7 @@ import { useMapData } from '@/hooks/useMapData';
 import { useMapStore } from '@/store/map-store';
 import { useTimelineStore } from '@/store/timeline-store';
 import { useMemo } from 'react';
+import { usePopulationHistory } from '@/hooks/usePopulationHistory';
 import Link from 'next/link';
 import type { LocationInfo } from '@/components/map/CommercialLayer';
 
@@ -30,6 +31,12 @@ export default function MapPage() {
   const { activeLayer, heatmapIntensity } = useMapStore();
   const { currentTimestamp, timeRange, timelineData, setCurrentTimestamp } = useTimelineStore();
 
+  const hotspots = data?.hotspots ?? [];
+
+  // Load population history for the first hotspot (enables timeline when data exists)
+  const timelineLocationId = hotspots.length > 0 ? hotspots[0]!.locationId : null;
+  usePopulationHistory(timelineLocationId);
+
   const handleMapReady = useCallback((m: unknown) => {
     setMapInstance(m as object);
   }, []);
@@ -42,8 +49,6 @@ export default function MapPage() {
     setActiveDistrict({ code, name });
     setSidebarOpen(true);
   }, []);
-
-  const hotspots = data?.hotspots ?? [];
   const locationMap = useMemo(() => {
     const map: Record<string, LocationInfo> = {};
     for (const h of hotspots) {
