@@ -25,14 +25,14 @@ export default function NewScenarioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <header className="border-b border-gray-800 px-6 py-4">
+    <div className="min-h-screen bg-[var(--background)]">
+      <header className="border-b border-[var(--border)] px-6 py-3.5">
         <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <Link href="/scenarios" className="text-gray-500 hover:text-gray-300 text-sm">
-            ← 목록으로
+          <Link href="/scenarios" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">
+            &larr; 목록
           </Link>
-          <span className="text-gray-700">/</span>
-          <h1 className="text-lg font-semibold text-gray-100">새 시나리오 만들기</h1>
+          <span className="text-slate-800">/</span>
+          <h1 className="text-sm font-semibold text-slate-200">새 시나리오</h1>
         </div>
       </header>
 

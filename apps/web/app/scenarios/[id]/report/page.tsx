@@ -25,16 +25,16 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <header className="border-b border-gray-800 px-6 py-4">
+    <div className="min-h-screen bg-[var(--background)]">
+      <header className="border-b border-[var(--border)] px-6 py-3.5">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href={`/scenarios/${id}`} className="text-gray-500 hover:text-gray-300 text-sm">
-              ← 시나리오
+            <Link href={`/scenarios/${id}`} className="text-slate-500 hover:text-slate-300 text-sm transition-colors">
+              &larr; 시나리오
             </Link>
-            <span className="text-gray-700">/</span>
-            <h1 className="text-lg font-semibold text-gray-100">
-              {scenario?.name ?? '리포트'} — 비교 분석
+            <span className="text-slate-800">/</span>
+            <h1 className="text-sm font-semibold text-slate-200">
+              {scenario?.name ?? '리포트'} &mdash; 비교 분석
             </h1>
           </div>
           <Button onClick={handleGenerate} disabled={isPending} variant="secondary" size="sm">
@@ -45,27 +45,27 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
 
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
         {generateError && (
-          <div className="bg-red-900/30 border border-red-700 rounded-xl p-4">
+          <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
             <p className="text-red-300 text-sm">{generateError}</p>
           </div>
         )}
 
         {reportLoading && (
-          <div className="text-center py-20">
-            <div className="inline-block w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-400 mt-3">리포트 로딩 중...</p>
+          <div className="text-center py-24">
+            <div className="inline-block w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+            <p className="text-slate-500 text-sm mt-4">리포트 로딩 중...</p>
           </div>
         )}
 
         {!reportLoading && !report && (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-24">
+            <div className="w-14 h-14 bg-[var(--surface)] border border-[var(--border)] rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h2 className="text-gray-300 font-medium mb-2">리포트가 없습니다</h2>
-            <p className="text-gray-500 text-sm mb-6">리포트를 생성하면 기간별 인구 및 매출 변화를 확인할 수 있습니다.</p>
+            <h2 className="text-slate-300 font-medium mb-1.5">리포트가 없습니다</h2>
+            <p className="text-slate-600 text-sm mb-6">리포트를 생성하면 기간별 인구 및 매출 변화를 확인할 수 있습니다.</p>
             <Button onClick={handleGenerate} disabled={isPending}>
               {isPending ? '생성 중...' : '리포트 생성하기'}
             </Button>
@@ -75,21 +75,21 @@ export default function ReportPage({ params }: { params: Promise<{ id: string }>
         {report && (
           <>
             <div>
-              <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4">요약</h2>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">요약</p>
               <ReportSummary reportData={report.reportData} />
             </div>
 
             <div>
-              <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4">위치별 변화율</h2>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">위치별 변화율</p>
               <ChangeRateChart data={report.reportData.changeRates} />
             </div>
 
             <div>
-              <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4">상세 비교 데이터</h2>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-3">상세 비교 데이터</p>
               <ComparisonTable data={report.reportData.changeRates} />
             </div>
 
-            <p className="text-gray-600 text-xs text-right">
+            <p className="text-slate-600 text-xs text-right">
               생성일: {new Date(report.generatedAt).toLocaleString('ko-KR')}
             </p>
           </>
