@@ -11,7 +11,9 @@ import { PlaybackControls } from '@/components/timeline/PlaybackControls';
 import { useMapData } from '@/hooks/useMapData';
 import { useMapStore } from '@/store/map-store';
 import { useTimelineStore } from '@/store/timeline-store';
+import { useMemo } from 'react';
 import Link from 'next/link';
+import type { LocationInfo } from '@/components/map/CommercialLayer';
 
 interface SelectedDistrictInfo {
   code: string;
@@ -42,6 +44,13 @@ export default function MapPage() {
   }, []);
 
   const hotspots = data?.hotspots ?? [];
+  const locationMap = useMemo(() => {
+    const map: Record<string, LocationInfo> = {};
+    for (const h of hotspots) {
+      map[h.locationId] = { lat: h.lat, lng: h.lng, name: h.name };
+    }
+    return map;
+  }, [hotspots]);
   const timestamps = Array.from(timelineData.keys()).sort();
   const currentData = currentTimestamp
     ? (timelineData.get(currentTimestamp) ?? hotspots)
@@ -112,6 +121,7 @@ export default function MapPage() {
               <CommercialLayer
                 map={mapInstance}
                 data={[]}
+                locationMap={locationMap}
                 visible={activeLayer.commercial}
               />
             )}

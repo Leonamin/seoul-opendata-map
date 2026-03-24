@@ -3,9 +3,16 @@
 import { useEffect, useRef } from 'react';
 import type { CommercialData } from '@seoul-opendata/shared';
 
+export interface LocationInfo {
+  lat: number;
+  lng: number;
+  name: string;
+}
+
 interface CommercialLayerProps {
   map: unknown;
   data: CommercialData[];
+  locationMap: Record<string, LocationInfo>;
   visible?: boolean;
 }
 
@@ -18,11 +25,7 @@ type MapboxMap = {
   on: (event: string, callback: () => void) => void;
 };
 
-interface LocationMap {
-  [locationId: string]: { lat: number; lng: number; name: string };
-}
-
-function toGeoJSON(data: CommercialData[], locationMap: LocationMap) {
+function toGeoJSON(data: CommercialData[], locationMap: Record<string, LocationInfo>) {
   return {
     type: 'FeatureCollection',
     features: data
@@ -33,19 +36,18 @@ function toGeoJSON(data: CommercialData[], locationMap: LocationMap) {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [loc.lng, loc.lat] },
           properties: {
-            totalSales: d.totalSales,
+            totalSales: Number(d.totalSales) || 0,
             businessType: d.businessTypeName,
             storeCount: d.storeCount,
+            name: loc.name,
           },
         };
       }),
   };
 }
 
-export function CommercialLayer({ map, data, visible = true }: CommercialLayerProps) {
+export function CommercialLayer({ map, data, locationMap, visible = true }: CommercialLayerProps) {
   const initializedRef = useRef(false);
-  // In a real app, locationMap would come from an API or store
-  const locationMap: LocationMap = {};
 
   useEffect(() => {
     if (!map) return;
@@ -90,13 +92,15 @@ export function CommercialLayer({ map, data, visible = true }: CommercialLayerPr
     }
   }, [map]);
 
+  // Update data when it changes
   useEffect(() => {
     if (!map || !initializedRef.current) return;
     const m = map as MapboxMap;
     const src = m.getSource('commercial');
     if (src) src.setData(toGeoJSON(data, locationMap));
-  }, [map, data]);
+  }, [map, data, locationMap]);
 
+  // Toggle visibility
   useEffect(() => {
     if (!map || !initializedRef.current) return;
     const m = map as MapboxMap;
