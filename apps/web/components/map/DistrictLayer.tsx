@@ -53,11 +53,32 @@ export function DistrictLayer({ map, selectedDistricts, onDistrictSelect }: Dist
       if (initializedRef.current) return;
       initializedRef.current = true;
 
-      const res = await fetch('/data/seoul-gu.geojson');
+      // Load mask and district data in parallel
+      const [maskRes, res] = await Promise.all([
+        fetch('/data/seoul-mask.geojson'),
+        fetch('/data/seoul-gu.geojson'),
+      ]);
+      const maskGeojson = await maskRes.json();
       const geojson = await res.json() as {
         type: string;
         features: Array<{ type: string; properties: { name: string; code: string; name_en: string }; geometry: unknown }>;
       };
+
+      // Add mask layer first (dims everything outside Seoul)
+      if (!m.getSource('seoul-mask')) {
+        m.addSource('seoul-mask', { type: 'geojson', data: maskGeojson });
+      }
+      if (!m.getLayer('seoul-mask-fill')) {
+        m.addLayer({
+          id: 'seoul-mask-fill',
+          type: 'fill',
+          source: 'seoul-mask',
+          paint: {
+            'fill-color': '#0a0f1a',
+            'fill-opacity': 0.6,
+          },
+        });
+      }
 
       // Assign numeric ids and build code->id map
       geojson.features = geojson.features.map((f, i) => {
@@ -100,6 +121,20 @@ export function DistrictLayer({ map, selectedDistricts, onDistrictSelect }: Dist
             'line-color': '#60a5fa',
             'line-opacity': 0.2,
             'line-width': 0.8,
+          },
+        });
+      }
+
+      // Seoul outer border glow
+      if (!m.getLayer('seoul-border')) {
+        m.addLayer({
+          id: 'seoul-border',
+          type: 'line',
+          source: 'seoul-mask',
+          paint: {
+            'line-color': '#3b82f6',
+            'line-opacity': 0.4,
+            'line-width': 1.5,
           },
         });
       }
