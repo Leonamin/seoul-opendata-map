@@ -37,7 +37,16 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
+  // Run seed if --seed flag is passed
+  if (process.argv.includes('--seed')) {
+    const { DataSource } = await import('typeorm');
+    const { seedSeoulHotspots } = await import('./database/seeds/seoul-hotspots.seed.js');
+    const dataSource = app.get(DataSource);
+    await seedSeoulHotspots(dataSource);
+    console.log('Seeding complete');
+  }
+
+  const port = parseInt(process.env.PORT ?? '4000', 10);
   await app.listen(port);
   console.log(`Application running on port ${port}`);
   console.log(`Swagger docs at http://localhost:${port}/api/docs`);
